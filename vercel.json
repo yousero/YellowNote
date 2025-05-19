@@ -2,30 +2,28 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/bot.js",
+      "src": "api/*.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "public/*",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "/api/$1.js",
+      "methods": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
       "src": "/",
-      "dest": "/api/index.js"
-    },
-    {
-      "src": "/api/board",
-      "dest": "/api/index.js",
-      "methods": [
-        "GET",
-        "POST"
-      ]
-    },
-    {
-      "src": "/api/bot",
-      "dest": "/api/bot.js",
-      "methods": [
-        "GET",
-        "POST"
-      ]
+      "dest": "/public/index.html"
     },
     {
       "src": "/(.*)",

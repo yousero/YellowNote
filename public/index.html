@@ -1,16 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yellow Note</title>
+  <title>Telegram Board App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .container {
+      text-align: center;
+    }
+  </style>
 </head>
 
 <body>
-  <main class="container">
-    test text
-  </main>
+  <div class="container">
+    <h1>📋 Telegram Board</h1>
+    <p>Ваши заметки из Telegram сохраняются здесь автоматически</p>
+    <div id="board"></div>
+  </div>
+
+  <script>
+    // Пример загрузки данных с API
+    fetch('/api/board/list')
+      .then(res => res.json())
+      .then(boards => {
+        console.log('Ваши доски:', boards);
+      });
+  </script>
 </body>
 
 </html>
