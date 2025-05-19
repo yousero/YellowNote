@@ -193,6 +193,70 @@ app.post('/api/note', checkSession, async (req, res) => {
   }
 });
 
+// Редактирование заметки
+app.put('/api/note/:id', checkSession, async (req, res) => {
+  try {
+    const noteId = req.params.id;
+    const { text, x, y, width, height, font_size } = req.body;
+
+    // Проверка прав доступа
+    const noteCheck = await pool.query(
+      `SELECT n.* FROM notes n
+       JOIN boards b ON n.board_id = b.uuid
+       WHERE n.uuid = $1 AND b.user_id = $2`,
+      [noteId, req.userId]
+    );
+
+    if (noteCheck.rowCount === 0) {
+      return res.status(404).json({ error: 'Note not found or access denied' });
+    }
+
+    // Обновление данных
+    const result = await pool.query(
+      `UPDATE notes SET
+        text = COALESCE($1, text),
+        x = COALESCE($2, x),
+        y = COALESCE($3, y),
+        width = COALESCE($4, width),
+        height = COALESCE($5, height),
+        font_size = COALESCE($6, font_size)
+       WHERE uuid = $7
+       RETURNING *`,
+      [text, x, y, width, height, font_size, noteId]
+    );
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    handleError(res, error);
+  }
+});
+
+// Редактирование данных пользователя
+app.put('/api/user/me', checkSession, async (req, res) => {
+  try {
+    const { name, avatar } = req.body;
+
+    // Валидация данных
+    if (!name && !avatar) {
+      return res.status(400).json({ error: 'No data to update' });
+    }
+
+    // Обновление профиля
+    const result = await pool.query(
+      `UPDATE users SET
+        name = COALESCE($1, name),
+        avatar = COALESCE($2, avatar)
+       WHERE uuid = $3
+       RETURNING uuid, name, avatar, email`,
+      [name, avatar, req.userId]
+    );
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    handleError(res, error);
+  }
+});
+
 // Маршрут для веб-интерфейса
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
