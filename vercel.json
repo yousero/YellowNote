@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/bot.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/api/board",
+      "dest": "/api/index.js",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "src": "/api/bot",
+      "dest": "/api/bot.js",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
+  ]
+}
